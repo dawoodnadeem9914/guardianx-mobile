@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0b1220;
+  color: #f8fafc;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reduced-motion support, matching the accessibility "reduced animation" setting. */
+.reduce-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* Large-text accessibility mode: scales the whole app's base font size up. */
+.large-text {
+  font-size: 118%;
+}
+
+/* High-contrast accessibility mode. */
+.high-contrast {
+  --tw-text-opacity: 1 !important;
+}
+.high-contrast body {
+  background-color: #000000;
+}
+.high-contrast .gx-card {
+  border-width: 2px !important;
+  border-color: #ffffff !important;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  z-index: 0;
+}
+
+/*
+ * Real safe-area support — only meaningful because layout.tsx sets
+ * viewport-fit=cover, which lets content draw under the iPhone notch/
+ * Dynamic Island/home-indicator instead of Safari auto-avoiding them.
+ * Without BOTH of these together, env(safe-area-inset-*) always
+ * evaluates to 0 and does nothing.
+ */
+.safe-area-shell {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
