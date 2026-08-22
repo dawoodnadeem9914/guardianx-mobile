@@ -208,3 +208,92 @@ export async function removeFamilyContact(id: string): Promise<{ success: boolea
   }
   return { success: true };
 }
+
+/** Trims, lowercases, and strips spaces/dashes so "John Tan" / " john  tan " and
+ * "012-345 6789" / "0123456789" compare as the same contact. Used only for
+ * migration dedup — never persisted or shown to the user. */
+function normalizeForCompare(value: string): string {
+  return value.trim().toLowerCase().replace(/[\s-]/g, "");
+}
+
+/**
+ * Bug #3 fix: moves any family contacts entered on-device BEFORE the user
+ * connected to GuardianX into the real, shared emergency_contacts table,
+ * once a real Supabase session exists.
+ *
+ * Safe to call every time a connection is detected (connect/page.tsx does
+ * exactly that) — safe to run multiple times because:
+ *   - a local contact already matching an existing Supabase contact by
+ *     normalized name+phone is treated as already-migrated and skipped,
+ *     never re-inserted;
+ *   - once local storage is cleared below, there is nothing left to
+ *     re-migrate on a later run, so it becomes a true no-op.
+ *
+ * Never deletes or overwrites anything already in Supabase. Respects the
+ * existing MAX_FAMILY_CONTACTS cap — contacts that don't fit are left in
+ * local storage untouched (not synced, not deleted), so nothing is lost.
+ * Only a contact that was actually inserted, or confirmed to already exist
+ * in Supabase, is cleared from local storage.
+ */
+export async function migrateLocalContactsToSupabase(userId: string): Promise<void> {
+  const localContacts = readLocalContacts();
+  if (localContacts.length === 0) return;
+
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
+
+  const { data: existingRows, error: fetchError } = await supabase
+    .from("emergency_contacts")
+    .select("id, name, phone, priority")
+    .eq("user_id", userId)
+    .order("priority", { ascending: true });
+
+  if (fetchError) {
+    console.warn("[familyService] Migration: couldn't read existing contacts:", fetchError.message);
+    return;
+  }
+
+  const existing = existingRows ?? [];
+  const existingKeys = new Set(
+    existing.map((row) => `${normalizeForCompare(row.name)}|${normalizeForCompare(row.phone)}`)
+  );
+
+  let nextPriority = existing.length + 1;
+  const stillLocal: FamilyContact[] = [];
+
+  for (const contact of localContacts) {
+    const key = `${normalizeForCompare(contact.name)}|${normalizeForCompare(contact.phone)}`;
+
+    if (existingKeys.has(key)) {
+      // Already present in Supabase — treat as migrated, clear locally.
+      continue;
+    }
+
+    if (nextPriority > MAX_FAMILY_CONTACTS) {
+      // At capacity — leave this one in local storage, don't lose it.
+      stillLocal.push(contact);
+      continue;
+    }
+
+    const { error: insertError } = await supabase.from("emergency_contacts").insert({
+      user_id: userId,
+      name: contact.name,
+      relationship: contact.relationship || "Family",
+      phone: contact.phone,
+      email: contact.email || null,
+      priority: nextPriority,
+    });
+
+    if (insertError) {
+      console.warn("[familyService] Migration: couldn't insert contact:", insertError.message);
+      // Leave it in local storage so it isn't silently lost.
+      stillLocal.push(contact);
+      continue;
+    }
+
+    existingKeys.add(key);
+    nextPriority += 1;
+  }
+
+  writeLocalContacts(stillLocal);
+}

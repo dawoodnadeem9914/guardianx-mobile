@@ -1,11 +1,31 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { useSettings } from "@/lib/settingsContext";
-import { Settings as SettingsIcon, Link2 } from "lucide-react";
+import { Settings as SettingsIcon, Link2, CheckCircle2, XCircle } from "lucide-react";
+import { getConnectionStatus } from "@/services/connectionService";
 
 export default function HomePage() {
   const { t } = useSettings();
+
+  // Real Supabase session state — never a fake localStorage boolean. This
+  // is the SAME getConnectionStatus() the /connect page already uses,
+  // which asks Supabase for the real current session rather than trusting
+  // any locally-stored flag. Re-checked every time the home screen mounts,
+  // so coming back from /connect after connecting or disconnecting always
+  // reflects the actual current state.
+  const [websiteConnected, setWebsiteConnected] = React.useState(false);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    void getConnectionStatus().then((status) => {
+      if (!cancelled) setWebsiteConnected(status.connected);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="flex flex-1 flex-col px-6 py-6">
@@ -21,12 +41,22 @@ export default function HomePage() {
           </span>
         </div>
 
+        {/* Small top button — Website Connection status. Replaces the old
+            icon-only Settings shortcut. Taps through to the existing
+            /connect page (same connectionService.ts flow — no new
+            connection/authentication system). The big Settings button
+            below, and the full /settings page, are unchanged. */}
         <Link
-          href="/settings"
-          aria-label={t("settings")}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white"
+          href="/connect"
+          aria-label={t("websiteConnectionTitle")}
+          className={`flex h-9 items-center gap-1.5 rounded-full border-2 px-3 text-xs font-bold active:scale-[0.98] ${
+            websiteConnected
+              ? "border-teal/40 bg-teal/10 text-teal-soft"
+              : "border-white/15 bg-white/10 text-white/70"
+          }`}
         >
-          <SettingsIcon size={20} />
+          {websiteConnected ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
+          {websiteConnected ? t("connectedShort") : t("notConnectedShort")}
         </Link>
       </div>
 

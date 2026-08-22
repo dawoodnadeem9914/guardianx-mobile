@@ -25,6 +25,31 @@ const dict = {
   settings: { en: "Settings", ms: "Tetapan" },
   connectToGuardianX: { en: "Connect to GuardianX", ms: "Sambung ke GuardianX" },
 
+  // ---- Website Connection (small top status button — reuses the existing
+  // /connect page and connectionService.ts; these are copy-only additions) ----
+  websiteConnectionTitle: { en: "Website Connection", ms: "Sambungan Laman Web" },
+  notConnectedShort: { en: "Not Connected", ms: "Tidak Disambungkan" },
+  connectedShort: { en: "Connected", ms: "Disambungkan" },
+  noWebsiteAccountConnected: {
+    en: "No GuardianX website account connected.",
+    ms: "Tiada akaun laman web GuardianX disambungkan.",
+  },
+  connectWebsiteAccountDesc: {
+    en: "Connect your mobile app to your GuardianX website account to share your information.",
+    ms: "Sambungkan aplikasi mudah alih anda ke akaun laman web GuardianX anda untuk berkongsi maklumat anda.",
+  },
+  connectWebsiteAccountButton: { en: "Connect Website Account", ms: "Sambung Akaun Laman Web" },
+  websiteAccountConnectedTitle: {
+    en: "Website Account Connected",
+    ms: "Akaun Laman Web Disambungkan",
+  },
+  accountLabelHeading: { en: "Account:", ms: "Akaun:" },
+  connectedSyncDesc: {
+    en: "GuardianX Mobile is connected to your GuardianX website account. Your shared information is synchronized through the shared Supabase account.",
+    ms: "GuardianX Mudah Alih disambungkan ke akaun laman web GuardianX anda. Maklumat kongsi anda disegerakkan melalui akaun Supabase yang dikongsi.",
+  },
+  disconnectAccountButton: { en: "Disconnect Account", ms: "Putuskan Akaun" },
+
   // ---- Emergency ----
   whatDoYouNeed: { en: "WHAT DO YOU NEED?", ms: "APA YANG ANDA PERLUKAN?" },
   speakOrChoose: { en: "You can speak or choose.", ms: "Anda boleh bercakap atau pilih." },

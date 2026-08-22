@@ -147,6 +147,79 @@ export async function saveMedicalInfo(info: MedicalInfo): Promise<SaveMedicalInf
   return { success: true };
 }
 
+/**
+ * Bug #3 fix: moves any medical information entered on-device BEFORE the
+ * user connected to GuardianX into the real, shared medical_profiles table,
+ * once a real Supabase session exists.
+ *
+ * Safe to call every time a connection is detected (connect/page.tsx does
+ * exactly that): medical_profiles.user_id is unique, so this checks for an
+ * existing row first and NEVER overwrites it — website/Supabase data always
+ * wins. Only writes local data into Supabase when no row exists yet at all,
+ * matching what saveMedicalInfo's own upsert would otherwise silently
+ * clobber if called blindly.
+ *
+ * The local cache is cleared once this has run to a safe conclusion either
+ * way (migrated, or skipped because Supabase already has data) — so that a
+ * later disconnect never shows a stale pre-migration snapshot instead of
+ * the real (possibly since-updated) Supabase data. Re-running this after
+ * the cache is empty is a genuine no-op, making it safe to call on every
+ * reconnect.
+ */
+export async function migrateLocalMedicalInfoToSupabase(userId: string): Promise<void> {
+  const local = readLocalMedicalInfo();
+  const hasLocalData =
+    local.name.trim() ||
+    local.age.trim() ||
+    local.bloodType.trim() ||
+    local.allergies.trim() ||
+    local.conditions.trim() ||
+    local.otherInfo.trim();
+
+  if (!hasLocalData) return;
+
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
+
+  const { data: existingRow, error: fetchError } = await supabase
+    .from("medical_profiles")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (fetchError) {
+    console.warn("[settingsService] Migration: couldn't check existing medical profile:", fetchError.message);
+    return;
+  }
+
+  if (existingRow) {
+    // A Supabase medical profile already exists — it wins. Don't touch it,
+    // but the stale local snapshot is no longer relevant, so clear it.
+    writeLocalMedicalInfo(EMPTY_MEDICAL_INFO);
+    return;
+  }
+
+  const bloodType = VALID_BLOOD_TYPES.includes(local.bloodType) ? local.bloodType : "unknown";
+
+  const { error: insertError } = await supabase.from("medical_profiles").insert({
+    user_id: userId,
+    full_name: local.name.trim() || "GuardianX user",
+    date_of_birth: ageToApproximateDob(local.age),
+    blood_type: bloodType,
+    allergies: local.allergies.trim() || null,
+    conditions: local.conditions.trim() || null,
+    notes: local.otherInfo.trim() || null,
+  });
+
+  if (insertError) {
+    console.warn("[settingsService] Migration: couldn't insert medical profile:", insertError.message);
+    // Leave local data intact so nothing is lost — will retry next connect.
+    return;
+  }
+
+  writeLocalMedicalInfo(EMPTY_MEDICAL_INFO);
+}
+
 export function getUserProfile(): UserProfile {
   const empty: UserProfile = { name: "", age: "", language: "en" };
   if (typeof window === "undefined") return empty;
