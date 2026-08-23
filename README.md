@@ -72,7 +72,6 @@ GuardianX is developed as an innovation project for the **UPM Computer Science R
 
 UCRIX places particular emphasis on innovation projects that work toward the United Nations' 17 Sustainable Development Goals. GuardianX Mobile supports that direction by making emergency and health-related information reachable on the device most people already carry, without requiring an app-store install or a lengthy account setup before any help can be offered.
 
-> *No award, ranking, or selection result is claimed here; this section describes the project's context, not its outcome.*
 
 ---
 
@@ -282,7 +281,6 @@ There is no separate mobile authentication system, no custom token scheme outsid
 | Deployment | Vercel |
 | PWA | Web app manifest (`public/manifest.json`), `display: standalone`; no service worker currently implemented |
 
-> These are the mobile application's own dependency versions, verified from this repository's `package.json` — intentionally different from, and independent of, the GuardianX Website's versions.
 
 ---
 
@@ -418,7 +416,6 @@ This repository does not currently include an automated test suite. Manual verif
 - `OPENAI_API_KEY` is used only inside server-only API routes and is never exposed to the browser.
 - The Supabase anon key is safe for client-side use by Supabase's own design — actual data protection comes from Row Level Security on the underlying tables, enforced identically regardless of whether the website or the mobile app is making the request.
 
-> This describes the security mechanisms actually present in this repository. It is not a claim of formal security certification or audit.
 
 ---
 
