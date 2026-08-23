@@ -1,104 +1,152 @@
 # GuardianX Mobile
 
-The companion mobile Progressive Web App (PWA) for the **GuardianX** emergency response, personal safety, and medical-information decision-support ecosystem. GuardianX Mobile provides fast, mobile-first access to emergency assistance, family contacts, and medical information, and can be securely connected to an existing GuardianX Website account.
+> The companion mobile Progressive Web App (PWA) of the **GuardianX** ecosystem — fast, mobile-first access to emergency assistance, family contacts, and medical information.
 
-## Production
+<div align="center">
 
-| | |
-|---|---|
-| **GuardianX Mobile** | https://guardianx-mobile.vercel.app |
-| **GuardianX Website** | https://guardianx-beta.vercel.app |
-| **Mobile Repository** | https://github.com/dawoodnadeem9914/guardianx-mobile |
-| **Website Repository** | https://github.com/dawoodnadeem9914/guardianx |
+| 🌐 Production | 📦 Repository |
+|:---:|:---:|
+| [guardianx-mobile.vercel.app](https://guardianx-mobile.vercel.app) | [github.com/dawoodnadeem9914/guardianx-mobile](https://github.com/dawoodnadeem9914/guardianx-mobile) |
 
-GuardianX Mobile and GuardianX Website are **separate repositories and separate deployments** that together form one ecosystem, connected through a shared Supabase backend and a shared user account.
+**Companion App:** [GuardianX Website](https://guardianx-beta.vercel.app) · [Repository](https://github.com/dawoodnadeem9914/guardianx)
+
+</div>
+
+---
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Why GuardianX Mobile?](#why-guardianx-mobile)
+3. [UCRIX 2026 Project](#ucrix-2026-project)
+4. [Role of the Mobile Application](#role-of-the-mobile-application)
+5. [Feature Status Legend](#feature-status-legend)
+6. [Key Features](#key-features)
+7. [Website Account Connection Flow](#website-account-connection-flow)
+8. [Data Synchronization](#data-synchronization)
+9. [Local Storage](#local-storage)
+10. [Supabase Integration](#supabase-integration)
+11. [Authentication / Account Linking](#authentication--account-linking)
+12. [Technology Stack](#technology-stack)
+13. [Architecture](#architecture)
+14. [Project Structure](#project-structure)
+15. [Environment Variables](#environment-variables)
+16. [Local Development](#local-development)
+17. [Deployment](#deployment)
+18. [Testing / Verification](#testing--verification)
+19. [Security](#security)
+20. [Medical & Safety Disclaimer](#medical--safety-disclaimer)
+21. [Project Status](#project-status)
+22. [Related Repository — GuardianX Website](#related-repository--guardianx-website)
+23. [Contributing](#contributing)
+24. [License](#license)
 
 ---
 
 ## Project Overview
 
-GuardianX Mobile is a lightweight, installable web app built for one purpose: getting a person to emergency help, their family contacts, and their own medical information in as few taps as possible. It complements the GuardianX Website — the full account, dashboard, and administration platform — by offering a fast, mobile-first entry point into the same ecosystem.
+GuardianX Mobile is a lightweight, installable web app built for one purpose: getting a person to emergency help, their family contacts, and their own medical information in as few taps as possible. It complements the **GuardianX Website** — the full account, dashboard, and administration platform — by offering a fast, mobile-first entry point into the same ecosystem.
 
 The app is usable immediately, with no account required, using on-device local storage for emergency contacts and medical information. It can optionally be connected to an existing GuardianX Website account, at which point that same data is synchronized into the shared Supabase backend and becomes consistent across both applications.
 
 ## Why GuardianX Mobile?
 
-In an emergency, the information that matters most is frequently unavailable at the moment it's needed:
+| Problem | GuardianX Mobile's Response |
+|---|---|
+| Medical information may not be accessible quickly during an emergency | A compact, always-on-device medical information form, usable with no account |
+| Emergency contacts are often scattered across a phone's native contacts app | A single, prioritized list of up to 3 emergency contacts, one tap away |
+| A full website dashboard is not built for someone in distress | A minimal, mobile-first interface with large touch targets and instant accessibility settings |
+| The same person's data shouldn't have to be entered twice | Secure connection to an existing GuardianX Website account, with automatic data migration |
 
-- Medical information (conditions, allergies, blood type) may not be accessible quickly, if at all.
-- Emergency contacts are often scattered across a phone's native contacts app rather than kept in one prioritized, purpose-built list.
-- Family or caregiver information may not be readily reachable during a stressful situation.
-- A full website dashboard is not designed for someone in distress, or for an elderly user who needs help in seconds, not minutes.
-
-GuardianX Mobile reduces that friction with a mobile-first interface focused on speed: a small number of clear actions, large touch targets, and accessibility settings that apply instantly. It is a **companion** to the website, not a replacement for it — deeper account management, detailed records, reports, and administration remain on the website.
+GuardianX Mobile is a **companion** to the website, not a replacement for it — deeper account management, detailed records, reports, and administration remain on the website.
 
 ## UCRIX 2026 Project
 
 GuardianX is developed as an innovation project for the **UPM Computer Science Research & International Innovation Exhibition (UCRIX) 2026**, at Universiti Putra Malaysia (UPM), Faculty of Computer Science and Information Technology. GuardianX Mobile is the mobile component of that larger project.
 
 | Milestone | Date |
-|---|---|
+|:---|:---|
 | Submission | 27 July – 14 August 2026 |
 | Judging Session | 17 – 21 August 2026 |
 | Winners Announcement | 24 August 2026 |
 
 UCRIX places particular emphasis on innovation projects that work toward the United Nations' 17 Sustainable Development Goals. GuardianX Mobile supports that direction by making emergency and health-related information reachable on the device most people already carry, without requiring an app-store install or a lengthy account setup before any help can be offered.
 
-*No award, ranking, or selection result is claimed here; this section describes the project's context, not its outcome.*
+> *No award, ranking, or selection result is claimed here; this section describes the project's context, not its outcome.*
 
 ---
 
 ## Role of the Mobile Application
 
-| | GuardianX Website | GuardianX Mobile |
-|---|---|---|
-| Account creation | Registration and login | No registration — connects to an existing website account only |
-| Primary use case | Full account management, detailed dashboards, institutional/admin features, reports | Fast emergency access, quick contact/medical lookup |
-| Medical profile | Full detailed profile management | Simplified fields, synced with the website once connected |
-| Emergency contacts | Full management, family invitations | Add/edit/remove up to 3 contacts, synced once connected |
-| Institutional dashboards | Hospital, campus, admin dashboards | Not present |
-| Reports | Guardian Report generation and PDF export | Not present |
-| Offline-first, no-account use | Requires login | Core emergency features work immediately, no account required |
+| Capability | GuardianX Website | GuardianX Mobile |
+|:---|:---:|:---:|
+| Account registration / login | ✅ Full | — (connects to existing account) |
+| Medical profile | ✅ Full detail | ✅ Simplified fields, synced |
+| Emergency contacts | ✅ Full management | ✅ Up to 3, synced |
+| Family invitations & permissions | ✅ | — |
+| AI emergency classification | ✅ | ✅ |
+| AI conversational guidance | ✅ Full assistant | ✅ Guidance only |
+| Institutional dashboards / reports | ✅ | — |
+| Offline / no-account emergency access | — | ✅ |
+| Camera-based QR account connection | — | ✅ |
+
+---
+
+## Feature Status Legend
+
+This README distinguishes three states throughout, matching how the source code itself labels functionality:
+
+| Symbol | Meaning |
+|:---:|:---|
+| ✅ **Implemented** | Real, working functionality — verified in source code |
+| ⚙️ **Optional / Configuration-Dependent** | Real integration that requires an API key or a connected website account; degrades to an honest "unavailable" or "local-only" state when unconfigured |
+| 🧪 **Simulated** | Deliberately implemented as a simulation, clearly labeled in the source code, not a live third-party integration |
 
 ---
 
 ## Key Features
 
-### Emergency Access
+### Emergency Access ✅ / 🧪
 
 - An Emergency Help flow supporting voice, text, and camera/image input.
-- Real AI-based emergency classification (medical / police / fire / unclear) and real, context-aware AI guidance via GPT-4.1 mini, with an honest, clearly labeled non-AI fallback classifier when the AI service is unavailable — never silently presented as AI-generated.
+- Real AI-based emergency classification (medical / police / fire / unclear) and real, context-aware AI guidance via GPT-4.1 mini ⚙️, with an honest, clearly labeled non-AI fallback classifier when the AI service is unavailable — never silently presented as AI-generated.
 - Real `tel:999` calling.
 - Real geolocation and a real straight-line distance calculation to the nearest hospital; travel time is explicitly labeled as an estimate, not live traffic/routing data.
-- A simulated ambulance/hospital journey shown only for Medical emergencies, clearly labeled as a simulation. Police and Fire flows never display any fabricated dispatch tracking.
+- A simulated ambulance/hospital journey shown only for Medical emergencies 🧪, clearly labeled as a simulation. Police and Fire flows never display any fabricated dispatch tracking.
 
-### Family & Emergency Contacts
+### Family & Emergency Contacts ✅
 
 - View, add, edit, and remove up to **3** family/emergency contacts.
 - Real calling and real messaging via the Web Share API and SMS/WhatsApp deep links — the app never claims to confirm message delivery, since that isn't something it can verify.
-- **Before connecting:** contacts are stored on-device only.
-- **After connecting:** contacts are read from and written to Supabase's `emergency_contacts` table — the same table the website uses — scoped to the signed-in account.
 
-### Medical Information
+| State | Where the data lives |
+|---|---|
+| Before connecting | Device `localStorage` only |
+| After connecting | Supabase `emergency_contacts` — the same table the website uses, scoped to the signed-in account |
 
-- A structured medical information form: name, age, blood type, allergies, conditions, and other notes.
-- **Before connecting:** stored on-device only.
-- **After connecting:** synced with Supabase's `medical_profiles` table, the same table the website's medical profile uses.
+### Medical Information ✅
 
-### Mobile Settings
+A structured medical information form: name, age, blood type, allergies, conditions, and other notes.
 
-- **Website Connection** — a status indicator in the top bar of the home screen (replacing what was previously a plain Settings shortcut) showing, in real time, whether the app is currently connected to a GuardianX Website account. It reflects the actual current Supabase session — never a locally stored flag — and reads ❌ *Not Connected* or ✓ *Connected*. Tapping it opens the connection screen described below.
+| State | Where the data lives |
+|---|---|
+| Before connecting | Device `localStorage` only |
+| After connecting | Supabase `medical_profiles` — the same table the website's medical profile uses |
+
+### Mobile Settings ✅
+
+- **Website Connection** — a status indicator in the top bar of the home screen (replacing what was previously a plain Settings shortcut) showing, in real time, whether the app is currently connected to a GuardianX Website account. It reflects the actual current Supabase session — never a locally stored flag — reading ❌ *Not Connected* or ✓ *Connected*. Tapping it opens the connection screen.
 - My Information (name, age, language) — local-only.
 - Dedicated settings pages for Family Contacts, Medical Information, Accessibility, Location, and Notifications.
 - Accessibility settings (large text, high contrast, reduced motion, voice guidance) apply instantly, app-wide, with no refresh required.
 
-### Language / Internationalization
+### Language / Internationalization ✅
 
 The app includes a centralized translation dictionary supporting **English** and **Bahasa Melayu**, covering the full interface. The active language is a local device setting.
 
-### Website Account Connection
+### Website Account Connection ⚙️
 
-A dedicated connection screen lets a user link the app to an existing GuardianX Website account. See [Website Account Connection](#website-account-connection-flow) below for the full flow.
+A dedicated connection screen lets a user link the app to an existing GuardianX Website account. See [Website Account Connection Flow](#website-account-connection-flow) below.
 
 ---
 
@@ -130,7 +178,7 @@ sequenceDiagram
 | Duplicate accounts | Not possible — the mobile sign-in step is configured with `shouldCreateUser: false`, so it can only attach to an account that already exists |
 | Token lifetime | Expires 10 minutes after generation |
 | Token reuse | Single-use — redemption is rejected once a token has already been redeemed |
-| Race protection | Redemption uses a `SECURITY DEFINER` Postgres function with row-level locking (`for update`) on the website's database, preventing a double-redemption race |
+| Race protection | Redemption uses a `SECURITY DEFINER` Postgres function with row-level locking (`for update`), on the website's database |
 | Disconnecting | Ends only the mobile app's own session; the website account itself is unaffected |
 
 This flow is implemented in `src/app/connect/page.tsx` and `src/services/connectionService.ts`. No separate or duplicate authentication system exists in the mobile app — every step above delegates to real Supabase Auth and to the two Postgres functions that live in the shared database.
@@ -138,6 +186,17 @@ This flow is implemented in `src/app/connect/page.tsx` and `src/services/connect
 ---
 
 ## Data Synchronization
+
+```mermaid
+flowchart LR
+    Local[(Device localStorage\ncontacts + medical info)] -->|On successful connect| Check{Already exists\nin Supabase?}
+    Check -->|Contacts: match by\nnormalized name + phone| Skip[Skip — treat as migrated]
+    Check -->|Medical: profile\nalready exists| Preserve[Preserve website data\nnever overwritten]
+    Check -->|No match / no profile| Insert[Insert into Supabase]
+    Skip --> Clear[Clear local cache entry]
+    Insert --> Clear
+    Preserve --> Clear
+```
 
 ### Emergency Contacts
 
@@ -156,8 +215,10 @@ This flow is implemented in `src/app/connect/page.tsx` and `src/services/connect
 
 The following remain local to the device and are **not** synchronized to the website, connected or not:
 
-- **My Information** (name, age, language)
-- **Accessibility settings** (large text, high contrast, reduced motion, voice guidance)
+| Setting | Reason |
+|---|---|
+| My Information (name, age, language) | Not yet mapped to a website data model |
+| Accessibility preferences | Intentionally per-device, not per-account |
 
 ---
 
@@ -165,17 +226,16 @@ The following remain local to the device and are **not** synchronized to the web
 
 Before a website account is connected, the app relies on the following `localStorage` keys to remain fully usable:
 
-| Key | Purpose |
-|---|---|
-| `guardianx-mobile:family-contacts` | Emergency/family contacts entered before connecting |
-| `guardianx-mobile:medical-info` | Medical information entered before connecting |
-| `guardianx-mobile:profile` | "My Information" — name, age, language (permanently local) |
-| `guardianx-mobile:accessibility` | Accessibility preferences (permanently local) |
+| Key | Purpose | Synced? |
+|---|---|:---:|
+| `guardianx-mobile:family-contacts` | Emergency/family contacts entered before connecting | ✅ On connect |
+| `guardianx-mobile:medical-info` | Medical information entered before connecting | ✅ On connect |
+| `guardianx-mobile:profile` | "My Information" — name, age, language | ❌ Always local |
+| `guardianx-mobile:accessibility` | Accessibility preferences | ❌ Always local |
 
 **Local before connection** — `family-contacts` and `medical-info` are read from and written to local storage only.
 **Supabase after connection** — the same two categories of data switch to reading from and writing to Supabase directly.
 **Migrated data** — any pre-connection local data in those two keys is copied into Supabase once, per the rules in [Data Synchronization](#data-synchronization), then cleared locally.
-**Always local** — `profile` and `accessibility` are never sent to Supabase, connected or not.
 
 ---
 
@@ -183,11 +243,15 @@ Before a website account is connected, the app relies on the following `localSto
 
 GuardianX Mobile connects to the **same Supabase project** as the GuardianX Website — there is no separate mobile-only backend.
 
-- **Supabase Auth** provides the real session established during the connection flow.
-- **PostgreSQL** is the underlying database, shared with the website.
-- **`emergency_contacts`** and **`medical_profiles`** are the same tables the website reads and writes, scoped to the signed-in user via Row Level Security.
-- **`auth.users`** is the same account table — a connected mobile session and a website login for the same person resolve to the same account.
-- **Mobile connection token functions** (`generate_mobile_connection_token()`, `redeem_mobile_connection_token()`) are called by the mobile app but are defined and owned in the **website repository's** migration history, since the website is the primary caller of the generation step. The mobile app only *consumes* this shared functionality; it does not define or own that schema.
+| Component | Role |
+|---|---|
+| Supabase Auth | Provides the real session established during the connection flow |
+| PostgreSQL | Underlying database, shared with the website |
+| `emergency_contacts`, `medical_profiles` | Same tables the website reads and writes, scoped via Row Level Security |
+| `auth.users` | Same account table — a connected mobile session and a website login for the same person resolve to the same account |
+| `generate_mobile_connection_token()`, `redeem_mobile_connection_token()` | Called by the mobile app, but **defined and owned in the website repository's** migration history, since the website is the primary caller of the generation step |
+
+The mobile app only *consumes* this shared functionality; it does not define or own that schema.
 
 ## Authentication / Account Linking
 
@@ -218,7 +282,7 @@ There is no separate mobile authentication system, no custom token scheme outsid
 | Deployment | Vercel |
 | PWA | Web app manifest (`public/manifest.json`), `display: standalone`; no service worker currently implemented |
 
-*Note: these are the mobile application's own dependency versions, verified from this repository's `package.json` — they are intentionally different from, and independent of, the GuardianX Website's versions.*
+> These are the mobile application's own dependency versions, verified from this repository's `package.json` — intentionally different from, and independent of, the GuardianX Website's versions.
 
 ---
 
@@ -278,7 +342,7 @@ guardianx-mobile/
 └── README.md
 ```
 
-**Important note on `supabase/migrations/`:** this repository contains a copy of the `mobile_connection_tokens` migration for reference, but the **canonical, applied** version of that schema lives in the **website repository's** migration history — the website is the primary caller of `generate_mobile_connection_token()`, and its migration history is treated as the source of truth for that table and its functions.
+> **Note on `supabase/migrations/`:** this repository contains a copy of the `mobile_connection_tokens` migration for reference, but the **canonical, applied** version of that schema lives in the **website repository's** migration history — the website is the primary caller of `generate_mobile_connection_token()`, and its migration history is treated as the source of truth for that table and its functions.
 
 ---
 
@@ -293,17 +357,17 @@ OPENAI_API_KEY=
 NEXT_PUBLIC_SITE_URL=
 ```
 
-| Variable | Purpose | Without it |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Must point at the **same** Supabase project as the GuardianX Website. Enables the real connection flow and real, shared Family Contacts / Medical Information | The Connect screen honestly reports "not set up yet"; Family Contacts and Medical Information stay device-local |
-| `OPENAI_API_KEY` | Server-only. Enables real GPT-4.1 mini emergency classification and guidance | Falls back to an honest, clearly labeled non-AI classifier |
-| `NEXT_PUBLIC_SITE_URL` | This app's own deployed origin, used when building the magic-link redirect during account connection | Defaults to the value already set in `.env.example` |
+| Variable | Required | Purpose | Without it |
+|---|:---:|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ⚙️ | Must point at the **same** Supabase project as the GuardianX Website. Enables the real connection flow and real, shared Family Contacts / Medical Information | Connect screen honestly reports "not set up yet"; Family Contacts and Medical Information stay device-local |
+| `OPENAI_API_KEY` | ⚙️ | Server-only. Enables real GPT-4.1 mini emergency classification and guidance | Falls back to an honest, clearly labeled non-AI classifier |
+| `NEXT_PUBLIC_SITE_URL` | ⚙️ | This app's own deployed origin, used when building the magic-link redirect during account connection | Defaults to the value already set in `.env.example` |
 
 ---
 
 ## Local Development
 
-> Local development only — separate from the production deployment listed under [Production](#production).
+> Local development only — separate from the production deployment listed at the top of this document.
 
 ```bash
 git clone https://github.com/dawoodnadeem9914/guardianx-mobile.git
@@ -354,15 +418,35 @@ This repository does not currently include an automated test suite. Manual verif
 - `OPENAI_API_KEY` is used only inside server-only API routes and is never exposed to the browser.
 - The Supabase anon key is safe for client-side use by Supabase's own design — actual data protection comes from Row Level Security on the underlying tables, enforced identically regardless of whether the website or the mobile app is making the request.
 
-This describes the security mechanisms actually present in this repository. It is not a claim of formal security certification or audit.
+> This describes the security mechanisms actually present in this repository. It is not a claim of formal security certification or audit.
+
+---
 
 ## Medical & Safety Disclaimer
 
 GuardianX Mobile is a decision-support and first-aid-guidance tool. It is **not** a certified diagnostic medical device, does not guarantee emergency response, and does not provide a live connection to any real emergency-dispatch network. It is not a substitute for professional medical care or for contacting real emergency services. AI-generated classifications and guidance are intended to help a user act quickly — not to replace clinical judgment. The ambulance/hospital journey shown for Medical emergencies is a clearly labeled simulation, not real dispatch tracking.
 
+---
+
 ## Project Status
 
-GuardianX Mobile is under active development as part of the GuardianX project for UCRIX 2026. Emergency Help, Family & Relatives, accessibility settings, real AI classification and guidance, real QR/code-based account connection, and automatic data migration on connect are implemented and functional against the shared Supabase backend. The application does not carry medical certification, does not guarantee emergency response, and has not been announced as an award recipient at UCRIX or any other event.
+GuardianX Mobile is under active development as part of the GuardianX project for UCRIX 2026.
+
+| Area | Status |
+|---|:---:|
+| Emergency Help (voice / text / camera) | ✅ Implemented |
+| AI classification & guidance | ✅ Implemented / ⚙️ requires `OPENAI_API_KEY` |
+| Family & Relatives (call / message) | ✅ Implemented |
+| Accessibility settings | ✅ Implemented |
+| Language (English / Bahasa Melayu) | ✅ Implemented |
+| Website account connection (QR / code) | ✅ Implemented |
+| Data migration on connect | ✅ Implemented |
+| Ambulance/hospital journey | 🧪 Simulated |
+| My Information / Accessibility sync to website | ❌ Not implemented (local-only by design) |
+
+This application does not carry medical certification, does not guarantee emergency response, and has not been announced as an award recipient at UCRIX or any other event.
+
+---
 
 ## Related Repository — GuardianX Website
 
@@ -370,6 +454,8 @@ GuardianX Mobile is under active development as part of the GuardianX project fo
 Production: https://guardianx-beta.vercel.app
 
 The primary account, dashboard, and management platform of the GuardianX ecosystem. GuardianX Mobile connects to an existing website account via the flow described above and shares the same Supabase backend.
+
+---
 
 ## Contributing
 
@@ -380,7 +466,8 @@ The primary account, dashboard, and management platform of the GuardianX ecosyst
 5. Push the branch.
 6. Open a pull request.
 
+---
+
 ## License
 
 No license has been specified for this repository.
-
